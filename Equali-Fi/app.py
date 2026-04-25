@@ -54,7 +54,9 @@ MODEL_AVATARS = {
     "DeepSeek Chat": "🔵",
     "GPT-4o Mini": "🟢",
     "Mistral Mixtral": "🟣",
-    "Google Gemma 2": "⚪"
+    "Google Gemma 4": "⚪",
+    "Llama 3.3 70B": "🦙",
+    "Qwen 2.5 72B": "🟠",
 }
 
 # --- CSS ---
@@ -87,11 +89,20 @@ body,
         linear-gradient(180deg, #05070a 0%, #06080d 55%, #05070a 100%);
 }
 
+[data-testid="stAppViewContainer"] {
+    max-width: none !important;
+}
+
+[data-testid="stAppViewContainer"] > .main,
+[data-testid="stAppViewContainer"] > .main > div,
+[data-testid="stAppViewContainer"] > .main > div > div {
+    max-width: none !important;
+    width: 100% !important;
+}
+
 [data-testid="stSidebar"] {
     background: rgba(9, 12, 18, 0.9);
     border-right: 1px solid rgba(255, 255, 255, 0.06);
-    min-width: 296px !important;
-    max-width: 308px !important;
 }
 
 [data-testid="stSidebar"] > div:first-child {
@@ -255,7 +266,9 @@ body,
     padding: 14px 18px;
     border-radius: 20px 20px 4px 20px;
     margin: 12px 0 12px auto;
-    max-width: 75%;
+    width: auto;
+    max-width: 80%;
+    box-sizing: border-box;
     color: white;
     animation: fadeSlideUp 0.25s ease-out;
     border: 1px solid rgba(129, 140, 248, 0.35);
@@ -268,7 +281,9 @@ body,
     padding: 14px 18px;
     border-radius: 20px 20px 20px 4px;
     margin: 12px auto 12px 0;
+    width: auto;
     max-width: 80%;
+    box-sizing: border-box;
     border: 1px solid rgba(148, 163, 184, 0.18);
     animation: fadeSlideUp 0.25s ease-out;
     backdrop-filter: blur(12px);
@@ -338,7 +353,9 @@ AVAILABLE_MODELS = {
     "DeepSeek Chat": "deepseek/deepseek-chat",
     "GPT-4o Mini": "openai/gpt-4o-mini",
     "Mistral Mixtral": "mistralai/mixtral-8x7b-instruct",
-    "Google Gemma 2": "google/gemma-2-9b-it"
+    "Google Gemma 4": "google/gemma-4-31b-it",
+    "Llama 3.3 70B": "meta-llama/llama-3.3-70b-instruct",
+    "Qwen 2.5 72B": "qwen/qwen-2.5-72b-instruct",
 }
 
 # --- SIDEBAR ---
@@ -346,14 +363,14 @@ with st.sidebar:
     st.markdown("""
     <div class="sidebar-brand">
         <div class="sidebar-brand__eyebrow">⚖ Governance Workspace</div>
-        <div class="sidebar-brand__title">Equali-Fi</div>
+        <div class="sidebar-brand__title"> ⚖️ Equali-Fi</div>
         <div class="sidebar-brand__subtitle">
             Compare model perspectives, manage threads clearly, and arrive at a stronger final answer.
         </div>
     </div>
     <div class="sidebar-divider"></div>
     """, unsafe_allow_html=True)
-    st.markdown("## ⚖️ Equali-Fi")
+    st.markdown("##  ⚖️   Equali-Fi")
     st.markdown('<div class="sidebar-section-label">Neutrality Board</div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-section-title">Active Agents</div>', unsafe_allow_html=True)
     selected = st.multiselect(
@@ -368,7 +385,7 @@ with st.sidebar:
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-section-label">Conversations</div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-section-title">Threads</div>', unsafe_allow_html=True)
-    if st.button("＋ New Thread", use_container_width=True):
+    if st.button("＋ New Thread", width='stretch'):
         name = f"Thread {len(st.session_state.chats)+1}"
         st.session_state.chats[name] = [{"role": "system", "content": NEUTRALIZER_PROMPT}]
         st.session_state.current_chat = name
@@ -387,14 +404,14 @@ with st.sidebar:
             if st.button(
                 f"Chat  {chat}",
                 key=f"thread_{chat}",
-                use_container_width=True,
+                width='stretch',
                 type="primary" if is_active else "secondary",
             ):
                 st.session_state.current_chat = chat
                 st.rerun()
 
         with chat_col_delete:
-            if st.button("X", key=f"remove_{chat}", use_container_width=True, help="Delete this thread"):
+            if st.button("X", key=f"remove_{chat}", width='stretch', help="Delete this thread"):
                 del st.session_state.chats[chat]
 
                 if not st.session_state.chats:
@@ -419,7 +436,7 @@ with st.sidebar:
         chat_col_btn, chat_col_delete = st.columns([6, 1], gap="small")
 
         with chat_col_btn:
-            if st.button(f"💬 {chat}", key=f"open_{chat}", use_container_width=True):
+            if st.button(f"💬 {chat}", key=f"open_{chat}", width='stretch'):
                 st.session_state.current_chat = chat
                 st.rerun()
 
@@ -427,7 +444,7 @@ with st.sidebar:
             delete_disabled = not can_delete_chat(chat)
             delete_help = "Delete this thread"
 
-            if st.button("✕", key=f"delete_{chat}", use_container_width=True, disabled=delete_disabled, help=delete_help):
+            if st.button("✕", key=f"delete_{chat}", width='stretch', disabled=delete_disabled, help=delete_help):
                 del st.session_state.chats[chat]
 
                 if not st.session_state.chats:
@@ -443,12 +460,12 @@ with st.sidebar:
                 st.rerun()
 
     for chat in []:
-        if st.button(f"💬 {chat}", use_container_width=True):
+        if st.button(f"💬 {chat}", width='stretch'):
             st.session_state.current_chat = chat
             st.rerun()
 
 # --- LAYOUT ---
-chat_col, analytics_col = st.columns([2.5, 1], gap="large")
+chat_col, analytics_col = st.columns([3, 1], gap="large")
 
 # --- CHAT ---
 with chat_col:
@@ -625,7 +642,7 @@ with analytics_col:
                 color="Model"
             ).properties(height=250)
 
-            st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, width='stretch')
         else:
             st.caption("No performance data yet.")
 
