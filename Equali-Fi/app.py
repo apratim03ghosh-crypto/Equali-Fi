@@ -662,10 +662,10 @@ if prompt := st.chat_input("Enter your query..."):
     
     # 2. Run the engine within a single status block
     with st.status("⚖️ Running Neutrality Engine...", expanded=True) as status:
-        # st.write("🧠 Querying multiple AI agents...")
-        # st.write("🗣️ Generating independent responses...")
-        # st.write("⚖️ Running neutrality evaluation...")
-        # st.write("🏆 Selecting best answer...")
+        st.write("🧠 Querying multiple AI agents...")
+        st.write("🗣️ Generating independent responses...")
+        st.write("⚖️ Running neutrality evaluation...")
+        st.write("🏆 Selecting best answer...")
 
         try:
             # Execute consensus logic
