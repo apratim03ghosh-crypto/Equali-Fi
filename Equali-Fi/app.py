@@ -556,27 +556,27 @@ with analytics_col:
         clean_reasoning = normalize_display_text(audit.get("reasoning"))
         clean_diff = normalize_display_text(audit.get("key_differences"), "No comparison available")
 
-        # --- VERDICT CARD ---
-        reasoning_html = html.escape(clean_reasoning).replace("\n", "<br>")
-        diff_html = html.escape(clean_diff).replace("\n", "<br>")
-        st.markdown(f"""
-        <div class="process-card">
-            <span class="winner-badge">🏆 FINAL VERDICT</span>
-            <h4>{audit['best_ai_name']}</h4>
+        # # --- VERDICT CARD ---
+        # reasoning_html = html.escape(clean_reasoning).replace("\n", "<br>")
+        # diff_html = html.escape(clean_diff).replace("\n", "<br>")
+        # st.markdown(f"""
+        # <div class="process-card">
+        #     <span class="winner-badge">🏆 FINAL VERDICT</span>
+        #     <h4>{audit['best_ai_name']}</h4>
 
-            <div style="font-size:0.85rem; color:#94a3b8; margin-top:6px;">
-                <strong>Why this won:</strong><br>
-                {reasoning_html}
-            </div>
+        #     <div style="font-size:0.85rem; color:#94a3b8; margin-top:6px;">
+        #         <strong>Why this won:</strong><br>
+        #         {reasoning_html}
+        #     </div>
 
-            <hr style="border:0.5px solid #334155; margin:10px 0;">
+        #     <hr style="border:0.5px solid #334155; margin:10px 0;">
 
-            <div style="font-size:0.85rem; color:#cbd5f5;">
-                <strong>🔍 Key Differences:</strong><br>
-                {diff_html}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        #     <div style="font-size:0.85rem; color:#cbd5f5;">
+        #         <strong>🔍 Key Differences:</strong><br>
+        #         {diff_html}
+        #     </div>
+        # </div>
+        # """, unsafe_allow_html=True)
 
         # --- SCORES ---
         st.bar_chart(audit["scores"], height=150)
